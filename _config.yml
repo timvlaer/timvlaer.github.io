@@ -53,8 +53,6 @@ nav:
     url:            "/archive"
   - name:           "Tags"
     url:            "/tags"
-  - name:           "Github"
-    url:            "https://github.com/timvlaer"
 
 # Sass
 sass:
