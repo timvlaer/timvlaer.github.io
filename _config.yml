@@ -3,23 +3,15 @@
 # # # # # # # # # # # # #
 
 # Basic
-name:               "Kiko Plus"
+name:               "Blog van Tim Van Laer"
 
 author:
-  facebook:         your-id
-  youtubeUser:      your-id
-  youtubeChannel:   your-id
-  twitter:          your-id
-  github:           your-id
-  stackoverflow:    your-id
-  quora:            your-id
-  linkedin:         your-id
-  pinterest:        your-id
-  googlePlus:       your-id
-  instagram:        your-id
-  reddit:           your-id
-  medium:           your-id
-  tumblr:           your-id
+  twitter:          timvanlaer
+  github:           timvlaer
+  stackoverflow:    esk  
+  linkedin:         timvanlaer
+  instagram:        timvlaer  
+  medium:           timvanlaer 
   email:            timvanlaer@gmail.com
 
 copyright:
