@@ -23,7 +23,7 @@ Group Topic Pid Offset logSize Lag Owner
 ```
 
 
-At [Sentiance](http://www.sentiance.com/), we gather this information every minute, sum it and push it to [AWS Cloudwatch](https://aws.amazon.com/cloudwatch/). In these figure you see three consumer groups with their lag over time.
+We gather this information every minute, sum it and push it to [AWS Cloudwatch](https://aws.amazon.com/cloudwatch/). In these figure you see three consumer groups with their lag over time.
 
 ![kafka-lag](/assets/images/kafka-lag.png) 
 *No issues here, a spike with a lag of 60 messages but the consumer rapidly catches up*
