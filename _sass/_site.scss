@@ -42,7 +42,7 @@ body {
     font-weight: 600;
 
     a {
-      color: $base-color;
+      color: $title-color;
       &:hover,
       &:focus {
         text-decoration: none;
@@ -57,7 +57,7 @@ body {
 
   &-nav {
     a {
-      color: $oc-gray-7;
+      color: $oc-gray-9;
       text-transform: lowercase;
       -webkit-transition: all .2s ease;
          -moz-transition: all .2s ease;
@@ -193,9 +193,10 @@ body {
     }
 
     &-title {
-      margin-bottom: .3rem;
+      margin-bottom: .5rem;
       font-size : 1.8rem;
       font-weight: 600;
+      line-height: 1.2em;
     }
 
     &-date {
