@@ -8,6 +8,8 @@ comments: true
 share: true
 ---
 
+* (Draft) *
+
 
 These days I work a lot with asynchronous microservices.
 * For me, *microservices* are small, independently deployable applications with a very clear defined responsability (do one thing and do it well).

@@ -14,7 +14,7 @@ I’m working on a [simple mobile app](https://github.com/timvlaer/ho-gids/) usi
 For cli-5.2.0 version of PhoneGap, the solution is simple. Create a hyperlink triggering following javascript. Notice the *_system* target.
 
 ```javascript
-window.open(“https://wikipedia.org”, “_system”);
+window.open("https://wikipedia.org", "_system");
 ```
 
 The caveat: you have to adapt the Cordova whitelist to get this to work, see [whitelist documentation](https://cordova.apache.org/docs/en/5.1.1/guide/appdev/whitelist/index.html). Hereafter you find the extract from my config.xml. Obviously you can tweak the intents to your use cases.
