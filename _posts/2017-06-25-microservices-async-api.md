@@ -8,7 +8,7 @@ comments: true
 share: true
 ---
 
-* (Draft) *
+*(This is a draft)*
 
 
 These days I work a lot with asynchronous microservices.
