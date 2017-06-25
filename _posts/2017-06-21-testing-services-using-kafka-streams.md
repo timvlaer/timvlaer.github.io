@@ -2,6 +2,7 @@
 date: 2017-06-21
 layout: post
 title: Testing services using Kafka (Streams)
+description: "Writing integration tests with embedded Kafka cluster."
 tags: [kafka, kafka streams]
 comments: false
 share: true

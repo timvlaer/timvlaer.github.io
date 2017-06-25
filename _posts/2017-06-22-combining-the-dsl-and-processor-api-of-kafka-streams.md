@@ -3,6 +3,7 @@ comments: false
 date: 2017-06-22
 layout: post
 title: Combining the DSL and Processor API of Kafka Streams
+description: "Get the most out of the Kafka Streams library"
 tags: [kafka, kafka streams]
 comments: false
 share: true
@@ -18,7 +19,7 @@ For most use cases I'd like to stick to the DSL. It is expressive and self-expla
 
 
 ```java
-KTable<String, Action> actionKTable = new KStreamBuilder()actionsStream
+KTable<String, Action> actionKTable = new KStreamBuilder()
     .stream("actions_topic")
     .mapValues(Actions::gunzipAndDeserialize)
     .groupBy((key, action) -> action.getId(), Serdes.String(), ThriftSerde.forClass(Action.class))

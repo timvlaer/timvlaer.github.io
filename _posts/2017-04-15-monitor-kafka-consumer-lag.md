@@ -2,6 +2,7 @@
 date: 2017-04-15 
 layout: post
 title: Monitor Kafka Consumer lag
+description: "Make sure Kafka consumers can keep up"
 tags: [kafka]
 comments: false
 share: true
