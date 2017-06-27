@@ -10,7 +10,7 @@ share: true
 
 KTables are the way to go when working with state in Kafka Streams. Basically they are a materialized view on a topic where every message is an upsert of the last record with the same key. (Read [duality of streams and tables](http://docs.confluent.io/current/streams/concepts.html#duality-of-streams-and-tables)). 
 
-KTables eventually contains every change published to the underlying topic.
+KTables *eventually* contains every change published to the underlying topic.
 
 Normal KTables only contain the data of the partitions consumed by the Kafka Streams application. If you run *N* instances of your application, a KTable will contain roughly `total entries / N` entries. Every instance consumes a different set of partitions and thus reads another part of the data resulting in different KTable content. In case you want to join two KTables, you have to make sure data of the two streams is on the right machine ([data co-partitioning](http://docs.confluent.io/current/streams/developer-guide.html#streams-developer-guide-dsl-joins-co-partitioning)). 
 
