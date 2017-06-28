@@ -12,14 +12,12 @@ share: true
 I am very happy with the [EmbeddedRedis implementation of Krzysztof Styrc](https://github.com/kstyrc/embedded-redis) for integration testing.
 To add some convenience, I created a JUnit ExternalResource from it, so I can add it as a ClassRule to my test. JUnit will then start and stop the cluster before and after the test suite.
   
-I use a cluster setup of Redis, so it chooses a random free network port itself.  
-  
 ```java
 @ClassRule
 public static final EmbeddedRedis REDIS = new EmbeddedRedis();
 ```
 
-The implementation:
+I use a cluster setup of Redis, so it chooses a random free network port itself. The implementation of the ExternalResource is straightforward:
 
 ```java
 import org.junit.rules.ExternalResource;
