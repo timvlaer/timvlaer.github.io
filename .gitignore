@@ -6,3 +6,4 @@ _drafts
 .DS_Store
 .jekyll-metadata
 _posts/0000-00-00-template.md
+.idea/
