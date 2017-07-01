@@ -21,11 +21,11 @@ Scenario's to consider a GlobalTable over a normal one:
 * the content of the table is limited or changes not very often
 * the table key is not a good candidate for evenly distributed partitioning. When joining this table, some instances will have a much bigger workload than others. This makes it hard to scale the application.
 
-Some import remarks when you work with GlobalKTables:
+Some remarks when you work with GlobalKTables:
 
-* GlobalKTables are fully populated before actual data processing starts. If your underlying topic is big, this might take a while. It might make sense so tune retention period and log compaction on that topic. (As of release 0.11, [global tables checkpoints their offset](https://issues.apache.org/jira/browse/KAFKA-5241).)
-> [On startup, Kafka Streams reads the current log-end-offsets and bootstrapping is finished after all those data was loaded.](https://stackoverflow.com/questions/44827559/how-does-kafkastreams-determine-whether-a-globalktable-is-fully-populated-while/44829013#44829013)
-* GlobalKTables are populated in a different thread (`_client-id_-GlobalStreamThread`) and a different consumer group per instance (`_client-id_-global`). ([See source code](https://github.com/apache/kafka/blob/trunk/streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java#L364)) 
+* GlobalKTables are fully populated before actual data processing starts ([details](https://stackoverflow.com/questions/44827559/how-does-kafkastreams-determine-whether-a-globalktable-is-fully-populated-while/44829013#44829013)). If your underlying topic is big, this might take a while. It might make sense so tune retention period and log compaction on that topic. 
+* As of release 0.11, [global tables checkpoints their offset](https://issues.apache.org/jira/browse/KAFKA-5241). This improves reboot time if you use a [durable state store](http://docs.confluent.io/current/streams/architecture.html#streams-architecture-state). This is the default, but doesn't make sense if you run your application inside a container without mount. 
+* GlobalKTables are populated in a different thread (`client_id-GlobalStreamThread`) and a different consumer group per instance (`client_id-global`). ([See source code](https://github.com/apache/kafka/blob/trunk/streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java#L364)) 
 * When you join a KStream with a GlobalKTable, messages with `null` key or value are ignored and do not trigger a join. Make sure you input stream contains a key. If not, first map your stream and then join.
 ([Read more](http://docs.confluent.io/current/streams/developer-guide.html#kstream-globalktable-join))
 
