@@ -12,19 +12,26 @@ KTables are the way to go when working with state in Kafka Streams. Basically th
 
 KTables *eventually* contains every change published to the underlying topic.
 
-Normal KTables only contain the data of the partitions consumed by the Kafka Streams application. If you run *N* instances of your application, a KTable will contain roughly `total entries / N` entries. Every instance consumes a different set of partitions and thus reads another part of the data resulting in different KTable content. In case you want to join two KTables, you have to make sure data of the two streams is on the right machine ([data co-partitioning](http://docs.confluent.io/current/streams/developer-guide.html#streams-developer-guide-dsl-joins-co-partitioning)). 
+Normal KTables only contain the data of the partitions consumed by the Kafka Streams application. If you run *N* instances of your application, a KTable will contain roughly `total entries / N` entries. Every instance consumes a different set of [Kafka partitions](https://kafka.apache.org/documentation.html#intro_topics) resulting in different KTable content. 
 
-In case your data is not partitioned with the right KTable key, you have to repartition your data. This is something that will happen anyway when you create a KTable from a stream via a [KGroupedStream](https://kafka.apache.org/0102/javadoc/org/apache/kafka/streams/kstream/KGroupedStream.html).
+If you'd like to have the same state in every instance, you'll have to use a GlobalKTable. Its API is very similar to KTable but it contains the full state. So every instance of your application will read all partitions of the underlying topic and thus eventually have the same state. 
 
-If you'd like to have the same state in every application, you'll have to use a GlobalKTable. These are very similar to KTables but contains the full state. So every instance of your application will read the full underlying topic and eventually have the same state. 
+Scenario's to consider a GlobalTable over a normal one:
+* to avoid [co-partitioning](http://docs.confluent.io/current/streams/developer-guide.html#streams-developer-guide-dsl-joins-co-partitioning) when you have to join a stream with multiple tables or two tables with each other. ([See this example](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=67633649#KIP-99:AddGlobalTablestoKafkaStreams-Example))
+* the content of the table is limited or changes not very often
+* the table key is not a good candidate for evenly distributed partitioning. When joining this table, some instances will have a much bigger workload than others. This makes it hard to scale the application.
 
 Some import remarks when you work with GlobalKTables:
 
-* GlobalKTables are fully populated before actual data processing starts. If your underlying topic is big, this might take a while. It might make sense so tune retention period and log compaction on that topic. 
-* When you join a KStream with a GlobalKTable, messages with `null` keys are ignored. Make sure you input stream contains a key. If not, first map your stream and then join.
+* GlobalKTables are fully populated before actual data processing starts. If your underlying topic is big, this might take a while. It might make sense so tune retention period and log compaction on that topic. (As of release 0.11, [global tables checkpoints their offset](https://issues.apache.org/jira/browse/KAFKA-5241).)
+> [On startup, Kafka Streams reads the current log-end-offsets and bootstrapping is finished after all those data was loaded.](https://stackoverflow.com/questions/44827559/how-does-kafkastreams-determine-whether-a-globalktable-is-fully-populated-while/44829013#44829013)
+* GlobalKTables are populated in a different thread (`_client-id_-GlobalStreamThread`) and a different consumer group per instance (`_client-id_-global`). ([See source code](https://github.com/apache/kafka/blob/trunk/streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java#L364)) 
+* When you join a KStream with a GlobalKTable, messages with `null` key or value are ignored and do not trigger a join. Make sure you input stream contains a key. If not, first map your stream and then join.
+([Read more](http://docs.confluent.io/current/streams/developer-guide.html#kstream-globalktable-join))
 
-```
+
+```java
 stream
     .map((k, v) -> new KeyValue(v.getId(), v))
-    .join(...)
+    .leftJoin(...)
 ```
