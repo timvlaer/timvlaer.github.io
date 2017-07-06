@@ -24,9 +24,9 @@ Scenario's to consider a GlobalTable over a normal one:
 Some remarks when you work with GlobalKTables:
 
 * GlobalKTables are fully populated before actual data processing starts ([details](https://stackoverflow.com/questions/44827559/how-does-kafkastreams-determine-whether-a-globalktable-is-fully-populated-while/44829013#44829013)). If your underlying topic is big, this might take a while. It makes sense to configure log compaction on that topic. 
-* Think twice if you can loose messages because of the topic retention strategy or non-durable state stores after an application crash. The state of the GlobalKTable can be assembled by
-** all the messages of the underlying topic or 
-** the state store + the topic lag. 
+* Think twice if you can loose messages because of the topic retention strategy or non-durable state stores after an application crash. The state of the GlobalKTable can be assembled by one of the following two options, make sure the relevant data is available.
+    * all the messages of the underlying topic or 
+    * the state store + the unread messages of the topic (lag) 
 * As of release 0.11, [global tables checkpoints their offset](https://issues.apache.org/jira/browse/KAFKA-5241). This improves reboot time if you use a [durable state store](http://docs.confluent.io/current/streams/architecture.html#streams-architecture-state). This is the default, but doesn't make sense if you run your application inside a container without mount. 
 * GlobalKTables are populated in a different thread (`client_id-GlobalStreamThread`) with a consumer without a group. ([See source code](https://github.com/apache/kafka/blob/trunk/streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java#L364)) So each consumer will read all messages on the topic.
 * When you join a KStream with a GlobalKTable, messages with `null` key or value are ignored and do not trigger a join. Make sure you input stream contains a key. If not, first map your stream and then join.
