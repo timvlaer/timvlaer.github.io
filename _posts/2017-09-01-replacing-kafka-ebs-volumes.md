@@ -12,8 +12,10 @@ Enlarging AWS EBS volumes is very easy and straight-forward. It is however not p
 
 The performance of EBS volumes is strictly related to the size of the disks: bigger disks get higher I/O throughput. 
  So it might be easy to speed up kafka doing I/O intensive work (like reindexing) by temporarily increasing the disk size.
- We wanted to decrease the disks afterwards, because we don't need the extra storage for now and want to avoid the extra cost for it.
- Problem is that when you want to decrease the volume of an EBS disk, you have to replace it with a new one. Here is how you do that:
+ 
+We want to decrease the disks when Kafka is running normal again, because we don't need the extra storage for now 
+and want to avoid the extra cost for it. 
+Problem is that when you want to decrease the volume of an EBS disk, you have to replace it with a new one. Here is how you do that:
 
 1. Create a new EBS volume and attach it to the kafka broker machine.
 1. Check with `lsblk` the new disk device 
