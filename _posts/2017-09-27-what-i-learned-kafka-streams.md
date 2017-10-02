@@ -2,14 +2,21 @@
 layout: post
 title: "What I learned from working with Kafka Streams"
 description: ""
-date: 2017-09-27
+date: 2017-10-02
 tags: [kafka, kafka streams]
 comments: true
 share: true
 ---
 
+### ALWAYS implement `UncaughtExceptionHandler`
+If an exception occurs, the StreamThread will be exited, but the streams application will keep running. 
+An application without StreamThreads won't make much progress and is completely useless. If you run a managed service, better call streams.stop() here.
+
+### Always provide a timeout for the `streams.close()` method
+It dares to hang, so better be safe. Especially when you're trying to shut down your application.
+
 ### Try to avoid blocking the loop between `poll()`'s longer than `max.poll.interval.ms`
-It will mess up the rebalancing which might cause the whole consumer group to halt. 
+It will cause rebalancing with quite some overhead that you could easily avoid by keeping an eye on processing times.
 
 Keep an eye on rebalancing times, e.g.
 ```java
@@ -40,17 +47,17 @@ Caching is important, but if you'd like to maintain a reasonable throughput on l
 
 You'll have to lower the value for sure when writing tests.  
 
-### Prefer using the ByteArray Serde and do the actual deserialization in map function
-Handle exceptions yourself
-
+### Prefer using the ByteArray Serde and do the actual deserialization yourself
+In the current versions of Kafka Streams (and the Kafka Java Consumer in general) to handle serialization exceptions yourself.
+https://docs.confluent.io/current/streams/faq.html#streams-faq-failure-handling-deserialization-errors-serde
 
 
 ### Measure the throughput / processing time
 * By measuring 
-** kafka lag, 
-** offset rate and,
-** topic size rate
-* By adding a transformer in the beginning of the flow
+** kafka lag (difference between current offset and topic size), 
+** offset rate (growth rate of the offset),
+** topic size rate (growth rate of the topic)
+* Exact time it took to process a message, you can add this transformer in the beginning of the flow:
 ```java
 @Override
 public KeyValue<byte[], Trigger> transform(byte[] key, Trigger value) {
