@@ -10,35 +10,23 @@ share: true
 
 ### ALWAYS implement `UncaughtExceptionHandler`
 If an exception occurs, the StreamThread will be exited, but the streams application will keep running. 
-An application without StreamThreads won't make much progress and is completely useless. If you run a managed service, better call streams.stop() here.
+An application without StreamThreads won't make much progress and is completely useless. If you run a managed service, better call `streams.close()` here.
 
 ### Always provide a timeout for the `streams.close()` method
-It dares to hang, so better be safe. Especially when you're trying to shut down your application.
+Streams.close is not thread-safe and could easily get in deadlock in 0.10.x versions. 
+
+### Consider an extra kill-switch
 
 ### Try to avoid blocking the loop between `poll()`'s longer than `max.poll.interval.ms`
-It will cause rebalancing with quite some overhead that you could easily avoid by keeping an eye on processing times.
-
-Keep an eye on rebalancing times, e.g.
-```java
-streams.setStateListener(new KafkaStreams.StateListener() {
-  private Timer.Context rebalancingTimer = null;
-
-  @Override
-  public void onChange(KafkaStreams.State newState, KafkaStreams.State oldState) {
-    if (KafkaStreams.State.REBALANCING.equals(newState)) {
-      rebalancingTimer = FirehoseMetricRegistry.get().timer("rebalancing").time();
-    } else if (rebalancingTimer != null && KafkaStreams.State.REBALANCING.equals(oldState)) {
-      rebalancingTimer.stop();
-    }
-  }
-});
-```
+The java consumer will send a LeaveGroup request if processing is taking longer than `max.poll.interval.ms`. 
+The next poll you'll join the consumer group again.
+To avoid consumer rebalancing overhead, keep an eye on the processing time and play with `max.poll.records`. 
 
 ### Increase the replication factor of internal topics
 Set the kafka stream configuration parameter `replication.factor` to the same value as your input topics.
 
 Kafka Streams will assume that data written to intermediate topics is durable. 
-If a broker crashes, you might loose data if it has only one replica.
+If a broker badly crashes, you might loose data if the topic has only one replica on that machine.
 
 ### Lower the commit interval when you work with stateful applications
 Updates to changelog topics will only flow through at every commit interval, which is 30 seconds by default.
@@ -66,6 +54,22 @@ public KeyValue<byte[], Trigger> transform(byte[] key, Trigger value) {
   timerContext.stop();
   return null;
 }
+```
+
+### Keep an eye on rebalancing times
+```java
+streams.setStateListener(new KafkaStreams.StateListener() {
+  private Timer.Context rebalancingTimer = null;
+
+  @Override
+  public void onChange(KafkaStreams.State newState, KafkaStreams.State oldState) {
+    if (KafkaStreams.State.REBALANCING.equals(newState)) {
+      rebalancingTimer = FirehoseMetricRegistry.get().timer("rebalancing").time();
+    } else if (rebalancingTimer != null && KafkaStreams.State.REBALANCING.equals(oldState)) {
+      rebalancingTimer.stop();
+    }
+  }
+});
 ```
 
 ### Kafka Streams is blocking
