@@ -29,7 +29,7 @@ while (!shutdown) {
 }
 ```
 
-Under the hood, quite a few things happen to detect if the consumer is still active. There are basically two mechanisms; 
+The Kafka consumer has two health check mechanisms; 
 one to check if the consumer is not dead (heartbeat) and one to check if the consumer is actually making progress (poll interval).
 
 A background thread is sending heartbeats every 3 seconds (`heartbeat.interval.ms`). If the group coordinator (one of the brokers) doesn't hear a heartbeat 
