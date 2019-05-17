@@ -41,7 +41,8 @@ So if processing time is too high, you risk a lot of rebalances which can stop p
  
 By default, the consumer will process 500 records per poll (`max.poll.records`). If the processing can take at most 5 minutes, 
 your consumer can take up to 600ms processing time per record. 
-See [KafkaConsumer#failure-detection](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#failuredetection)
+See [KafkaConsumer#failure-detection](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#failuredetection) 
+for more details.
 
 Apart from fetching messages, the `poll` request also checks the group metadata. 
 This metadata contains the partition assignment and rebalance information. 
@@ -55,6 +56,7 @@ If processing time is still too high, I suggest to decouple polling from process
 
 You can decouple polling by executing the actual processing in another thread and keep the main thread alive to execute the `poll` method.
 Of course, in this case you want to disable new records coming in which you can do by pausing the consumer. 
-See [KafkaConsumer#pause](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause-java.util.Collection-) 
+See [KafkaConsumer#pause](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause-java.util.Collection-).
+ 
 If you want to play around with a asynchronous processing thread, I can recommend the 
-[Akka Streams Kafka](https://doc.akka.io/docs/alpakka-kafka/current/home.html) library, it does this out of the box. 
+[Akka Streams Kafka](https://doc.akka.io/docs/alpakka-kafka/current/home.html) library, it does this out of the box.  
