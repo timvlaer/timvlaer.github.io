@@ -11,7 +11,23 @@ share: true
 The kafka consumer has a very convenient api. You configure it with a couple of connection properties, subscribe to one or more topics 
 and start polling for messages.
 
-Under the hood, quite a few things happen to detect if the consumer is still active. There are basically two mechanisms, 
+```java
+Properties consumerProps = new Properties();
+consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-broker:9092");
+consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "tim");
+consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+
+KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(consumerProps);
+consumer.subscribe(Collections.singleton("kafka-topic"));
+
+while (!shutdown) {
+  ConsumerRecords<byte[], byte[]> records = consumer.poll(10000);
+  // do something
+}
+```
+
+Under the hood, quite a few things happen to detect if the consumer is still active. There are basically two mechanisms; 
 one to check if the consumer is not dead (heartbeat) and one to check if the consumer is actually making progress (poll interval).
 
 A background thread is sending heartbeats every 3 seconds (`heartbeat.interval.ms`). If the group coordinator (one of the brokers) doesn't hear a heartbeat 
@@ -27,7 +43,7 @@ By default, the consumer will process 500 records per poll (`max.poll.records`).
 your consumer can take up to 600ms processing time per record. 
 See [KafkaConsumer#failure-detection](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#failuredetection)
 
-Apart from fetching mesages, a `poll` request also checks the group metadata. 
+Apart from fetching messages, the `poll` request also checks the group metadata. 
 This metadata contains the partition assignment and rebalance information. 
 As long as the consumer doesn't poll, it will not be aware of any changes to the consumer group. 
 With other words, `max.poll.interval.ms` is also the maximum amount of time a rebalance can take, 
