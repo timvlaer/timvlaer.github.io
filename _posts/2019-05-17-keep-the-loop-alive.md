@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "How to keep the kafka consumer alive"
-description: "Insights in the behaviour of the kafka consumer poll loop"
+title: "How to keep the kafka consumer alive?"
+description: "The behaviour of the kafka consumer poll loop"
 date: 2019-05-17
 tags: [kafka]
 comments: true
