@@ -8,9 +8,11 @@ comments: true
 share: true
 ---
 
-The kafka consumer has a very convenient api. You configure it with a couple of connection properties, subscribe to one or more topics 
-and start polling for messages.
+While consuming messages from Kafka, quite a few things happen in the background to make sure the consumer is actually performing well.
+In this article I focus on the timeout mechanisms in place to keep a consumer and its group stable. 
+Especially if the processing of messages can take a while, you might run into issues. Read on.   
 
+The kafka consumer has a convenient api. With a bit of setup, you can quickly start consuming messages by calling `poll` inside a loop:
 ```java
 Properties consumerProps = new Properties();
 consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-broker:9092");
@@ -22,7 +24,7 @@ KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(consumerProps);
 consumer.subscribe(Collections.singleton("kafka-topic"));
 
 while (!shutdown) {
-  ConsumerRecords<byte[], byte[]> records = consumer.poll(10000);
+  ConsumerRecords<byte[], byte[]> records = consumer.poll(Duration.ofSeconds(10));
   // do something
 }
 ```
